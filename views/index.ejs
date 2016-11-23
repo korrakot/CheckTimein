@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= title %></title>
+    <link rel="stylesheet" type="text/css" href="bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="bootstrap-datepicker/bootstrap-datepicker.min.css">
+    <link rel="stylesheet" type="text/css" href="swal/sweetalert.css">
+    <script type="text/javascript" src="js/jquery-1.11.1.min.js"></script>
+    <script type="text/javascript" src="moment/moment.js"></script>
+    <script type="text/javascript" src="bootstrap-datepicker/bootstrap-datepicker.min.js"></script>
+    <script type="text/javascript" src="bootstrap-datepicker/bootstrap-datepicker.th.min.js"></script>
+    <script type="text/javascript" src="swal/sweetalert.min.js" ></script>
+    <script type="text/javascript" src="js/function.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+  </head>
+  <body>
+
+  <nav class="navbar navbar-default">
+    <div class="container-fluid">
+      <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+        <form class="navbar-form navbar-right" role="form" onsubmit="return false" >
+          <% if(sess[0].id) {%>
+           <div class="input-group">
+              <span class="input-group-addon"><%= name%></span>                                 
+          </div>
+            <button type="button" class="btn btn-primary" id="clickLogout">Logout</button>
+          <% }else {%>
+          <div class="input-group">
+              <span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
+              <input id="email" type="email" class="form-control" name="email" value="" placeholder="Email Address">                                        
+          </div>
+          <div class="input-group">
+              <span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
+              <input id="password" type="password" class="form-control" name="password" value="" placeholder="Password">                                        
+          </div>
+          <button type="submit" class="btn btn-primary" id="clickLogin">Login</button>
+          <% } %>
+        </form>
+      </div>
+    </div>
+  </nav>
+  
+  <div class="jumbotron text-center">
+      <h1>บันทึก วัน-เวลา การเข้าทำงาน</h1>
+      <div class="col-md-12">
+        <p class="col-md-2 col-md-offset-7"></p><!-- Time recording work. -->
+      </div>  
+  </div>
+
+  <style type="text/css">
+    body { background: #FCFCFC ; }
+  </style>
+
+  <div class="col-md-12 ">
+    <div class="container"  style="margin-top:50px;">
+      <div class="col-md-3 col-md-offset-1  text-center">
+        <span id="dataDete" style="font-size:50px"></span>
+      </div>
+      <div class="col-md-3 col-md-offset-1 text-center">
+        <span id="dataTime" style="font-size:50px"></span>
+      </div>
+  <% if(sess[0].id) {%>
+    <% if(sess[0].status==0) {%>
+      <div class="col-md-2 col-md-offset-2 " >
+        <input class="btn btn-primary btn-lg " id="savedataintime" type="button" value="ยืนยัน" >
+      </div>
+      <% }else{ %>
+        <div class="col-md-2 col-md-offset-2 " >
+          <button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal">เพิ่มผู้ใช้</button>
+        </div>
+      <% } %>   
+      
+  <% } %>   
+      <div class="col-md-12" style="margin-top:50px;">
+         <div class="col-md-4 col-md-offset-7">
+           <select class="form-control" id="dataselectName">
+              <option value="">-ค้นหารายชื่อ-</option>
+           </select>
+        </div>
+      </div>
+            
+      <div class="col-md-12" style="margin-top:30px">
+        <div class="col-md-2 col-md-offset-6">
+            <input type="text" class="form-control searchdatadate datepicker" id="datepicker" placeholder="ค้นหาข้อมูล..." >
+        </div>
+        <span class="col-md-1 text-center">-</span>
+        <div class="col-md-2" >
+          <input type="text" class="form-control searchdatadateEnd datepicker" id="datepicker" placeholder="ค้นหาข้อมูล..." >
+        </div>
+        <div class=" col-md-1">
+            <button class="btn btn-default btn-block searchdatadatesubmit" type="button">ค้นหา</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+
+  <div class="container" width="10%">
+    <div class="row">
+      <div class="col-md-12" style="margin-top:50px;"> 
+        <table class="table table-hover">
+          <thead style="margin-top:50px;" >
+            <tr>
+              <th width="5%" class="text-center">ลำดับ</th>
+              <th width="20%" class="text-center">Name</th>
+              <th width="17%" class="text-center">Date</th>
+              <th width="14%" class="text-center">TimeIn</th>
+              <th width="13%" class="text-center">TimeOut</th>
+              <th width="14%" class="text-center">TimeLate</th>
+              <th width="12%" class="text-center">ค่ามาสาย</th>
+            </tr>
+          </thead>
+          <tbody id="dataprofile">
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- Modal -->
+  <div class="modal fade" id="myModal" role="dialog">
+    <div class="modal-dialog">
+    
+      <!-- Modal content-->
+      <div class="modal-content">
+        <form>
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <h4 class="modal-title">เพิ่มผู้ใช้</h4>
+          </div>
+          <div class="modal-body">
+
+             <div class="form-group">
+              <label class="col-md-3 control-lable">
+                คำนำหน้า : 
+              </label>
+              <div class="col-md-9" >
+                <input type="text" name="sex" class="form-control" id="Formuserarticle">
+                <label class="label label-danger" id="errorFormuserarticle" style="font-size:11px;visibility:hidden;"></label><br>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="col-md-3 control-lable">
+                Name : 
+              </label>
+              <div class="col-md-9">
+                <input type="text" name="Name" class="form-control" id="FormuserName">
+                <label class="label label-danger" id="errorFormuserName" style="font-size:11px;visibility:hidden;"></label><br>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="col-md-3 control-lable" class="form-control">
+                Surname : 
+              </label>
+              <div class="col-md-9">
+                <input type="text" name="Surname" class="form-control" id="FormuserSurName">
+                <label class="label label-danger" id="errorFormuserSurName" style="font-size:11px;visibility:hidden;"></label><br>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="col-md-3 control-lable" class="form-control">
+                University : 
+              </label>
+              <div class="col-md-9">
+                <input type="text" name="University" class="form-control" id="FormuserUniversity">
+                <label class="label label-danger" id="errorFormuserUniversity" style="font-size:11px;visibility:hidden;"></label><br>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="col-md-3 control-lable">
+                Email : 
+              </label>
+              <div class="col-md-9">
+                <input type="text" name="Email" class="form-control" id="FormuserEmail">
+                <label class="label label-danger" id="errorFormuserEmail" style="font-size:11px;visibility:hidden;"></label><br>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="col-md-3 control-lable">
+                Password : 
+              </label>
+              <div class="col-md-9">
+                <input type="password" name="password" class="form-control" id="Formuserpassword">
+                <label class="label label-danger" id="errorFormuserpassword" style="font-size:11px;visibility:hidden;"></label><br>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>  
+            <button type="button" class="btn btn-primary" id="AddSaveUser">Save changes</button>
+          </div>
+        </form>
+      </div> 
+    </div>
+  </div>
+</div>
+
+  </body>
+</html>
